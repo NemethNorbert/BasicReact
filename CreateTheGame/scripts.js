@@ -81,13 +81,23 @@ const Numbers = (props) => {
 
 Numbers.list = _.range(1, 10);
 
+const DoneFrame = (props) => {
+  return (
+    <div className="text-center">
+      <h2>{props.doneStatus}</h2>
+    </div>
+  );
+};
+
 class Game extends React.Component {
+  static randomNumber = () => 1 + Math.floor(Math.random()*9);
   state = {
     selectedNumbers: [],
-    randomNumberOfStars: 1 + Math.floor(Math.random()*9),
+    randomNumberOfStars: Game.randomNumber(),
     usedNumbers: [],
     answerIsCorrect: null,
     redraws: 5,
+    doneStatus: null,
   };
   selectNumber = (clickedNumber) => {
     if (this.state.selectedNumbers.indexOf(clickedNumber) >= 0) { return; }
@@ -114,13 +124,13 @@ class Game extends React.Component {
       usedNumbers: prevState.usedNumbers.concat(prevState.selectedNumbers),
       selectedNumbers: [],
       answerIsCorrect: null,
-      randomNumberOfStars: 1 + Math.floor(Math.random()*9),
+      randomNumberOfStars: Game.randomNumber(),
     }));
   };
   redraw = () => {
     if (this.state.redraws === 0) { return; }
     this.setState(prevState => ({
-      randomNumberOfStars: 1 + Math.floor(Math.random()*9),
+      randomNumberOfStars: Game.randomNumber(),
       answerIsCorrect: null,
       selectedNumbers: [],
       redraws: prevState.redraws - 1,
@@ -133,6 +143,7 @@ class Game extends React.Component {
       answerIsCorrect,
       usedNumbers,
       redraws,
+      doneStatus,
     } = this.state;
 
     return (
@@ -151,9 +162,12 @@ class Game extends React.Component {
                   unselectNumber={this.unselectNumber} />
         </div>
         <br />
-        <Numbers selectedNumbers={selectedNumbers}
-                 selectNumber={this.selectNumber}
-                 usedNumbers={usedNumbers} />
+        {doneStatus ?
+          <DoneFrame doneStatus={doneStatus} /> :
+          <Numbers selectedNumbers={selectedNumbers}
+                   selectNumber={this.selectNumber}
+                   usedNumbers={usedNumbers} />
+        }
       </div>
     );
   }
